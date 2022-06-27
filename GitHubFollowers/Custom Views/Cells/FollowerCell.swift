@@ -26,6 +26,7 @@ class FollowerCell: UICollectionViewCell {
     
     func set(follower: Follower) {
         usernameLabel.text = follower.login
+        avatarimageView.downloadImage(from: follower.avatarUrl)
     }
     
     
@@ -36,14 +37,14 @@ class FollowerCell: UICollectionViewCell {
         let padding:CGFloat = 8
         
         NSLayoutConstraint.activate([
-            avatarimageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: padding),
-            avatarimageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding), //isso ja define o tamanho de width
-            avatarimageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            avatarimageView.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            avatarimageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding), //isso ja define o tamanho de width
+            avatarimageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
             avatarimageView.heightAnchor.constraint(equalTo: avatarimageView.widthAnchor), //para deixar quadrado
             
             usernameLabel.topAnchor.constraint(equalTo: avatarimageView.bottomAnchor, constant: 12),
-            usernameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
-            usernameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
+            usernameLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
+            usernameLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
             usernameLabel.heightAnchor.constraint(equalToConstant: 12)
         ])
     }

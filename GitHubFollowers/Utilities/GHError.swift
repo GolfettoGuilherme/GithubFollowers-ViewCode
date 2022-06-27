@@ -1,8 +1,8 @@
 //
-//  ErrorMessage.swift
+//  GHError.swift
 //  GitHubFollowers
 //
-//  Created by Guilherme Golfetto on 25/06/22.
+//  Created by Guilherme Golfetto on 26/06/22.
 //
 
 import Foundation
