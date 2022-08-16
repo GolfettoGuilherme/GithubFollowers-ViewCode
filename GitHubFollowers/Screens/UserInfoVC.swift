@@ -7,15 +7,21 @@
 
 import UIKit
 
+protocol UserInfoVCDelegate: class {
+    func didTapGithubProfile(for user: User)
+    func didTapGetFollowers(for user: User)
+}
+
 class UserInfoVC: UIViewController {
     
     let headerView  = UIView()
     let itemViewOne = UIView()
     let itemViewTwo = UIView()
-    
+    let dateLabel   = GFBodyLabel(textAlign: .center)
     var itemViews: [UIView] = []
     
     var username: String!
+    weak var delegate: FollowerListVCDelegate!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,23 +35,8 @@ class UserInfoVC: UIViewController {
             guard let self = self else { return }
             
             switch result {
-                
             case .success(let user):
-                
-                DispatchQueue.main.async {
-                    self.add(
-                        childVC: GFUserInfoHeaderVC(user: user),
-                        to: self.headerView
-                    )
-                    self.add(
-                        childVC: GFRepoItemVC(user: user),
-                        to: self.itemViewOne
-                    )
-                    self.add(
-                        childVC: GFFollowerVC(user: user),
-                        to: self.itemViewTwo
-                    )
-                }
+                DispatchQueue.main.async { self.configureUIElements(with: user) }
                 
             case .failure(let error):
                 self.presentGFAlertOnMainThread(
@@ -55,6 +46,28 @@ class UserInfoVC: UIViewController {
                 )
             }
         }
+    }
+    
+    func configureUIElements(with user: User) {
+        let repoItemVC          = GFRepoItemVC(user: user)
+        repoItemVC.delegate     = self
+        
+        let followerItemVC      = GFFollowerVC(user: user)
+        followerItemVC.delegate = self
+        
+        self.add(
+            childVC: GFUserInfoHeaderVC(user: user),
+            to: self.headerView
+        )
+        self.add(
+            childVC: repoItemVC,
+            to: self.itemViewOne
+        )
+        self.add(
+            childVC: followerItemVC,
+            to: self.itemViewTwo
+        )
+        self.dateLabel.text = "Github since \(user.createdAt.converToDisplayFormat())"
     }
     
     func configureViewController() {
@@ -72,7 +85,8 @@ class UserInfoVC: UIViewController {
         let itemHeight:CGFloat = 140
         
         //isso é para a parte repetitiva
-        itemViews = [headerView, itemViewOne, itemViewTwo]
+        itemViews = [headerView, itemViewOne, itemViewTwo, dateLabel]
+        
         for itemview in itemViews {
             view.addSubview(itemview)
             itemview.translatesAutoresizingMaskIntoConstraints = false
@@ -91,7 +105,10 @@ class UserInfoVC: UIViewController {
             itemViewOne.heightAnchor.constraint(equalToConstant: itemHeight),
             
             itemViewTwo.topAnchor.constraint(equalTo: itemViewOne.bottomAnchor, constant: padding),
-            itemViewTwo.heightAnchor.constraint(equalToConstant: itemHeight)
+            itemViewTwo.heightAnchor.constraint(equalToConstant: itemHeight),
+            
+            dateLabel.topAnchor.constraint(equalTo: itemViewTwo.bottomAnchor, constant: padding),
+            dateLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
     }
     
@@ -104,6 +121,27 @@ class UserInfoVC: UIViewController {
     
     @objc func dismissVc() {
         dismiss(animated: true)
+    }
+
+}
+
+extension UserInfoVC: UserInfoVCDelegate {
+    
+    func didTapGithubProfile(for user: User) {
+        guard let url = URL(string: user.htmlUrl) else {
+            presentGFAlertOnMainThread(
+                title: "Invalid URL",
+                message: "The URL of this sucker is invalid",
+                bnuttonTitle: "OK"
+            )
+            return
+        }
+        
+        presentSafariVC(with: url)
+    }
+    
+    func didTapGetFollowers(for user: User) {
+        delegate.didRequestFollowers(for: user.login)
     }
 
 }

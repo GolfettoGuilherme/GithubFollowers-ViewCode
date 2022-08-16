@@ -17,9 +17,11 @@ class GFItemInfoVC: UIViewController {
     //só vai ter a estrutura da interface
     
     var user: User!
-
+    weak var delegate: UserInfoVCDelegate! //prevent retain cycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureActionButton()
         configureBackgroundView()
         layoutUI()
         configureStackView()
@@ -47,6 +49,12 @@ class GFItemInfoVC: UIViewController {
         stackView.addArrangedSubview(itemInfoViewTwo)
     }
     
+    private func configureActionButton() {
+        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
+    }
+    
+    @objc func actionButtonTapped() {} // nas subclasses vamos dar override nesse metodo
+    
     private func layoutUI() {
         view.addSubview(stackView)
         view.addSubview(actionButton)
@@ -66,4 +74,5 @@ class GFItemInfoVC: UIViewController {
             actionButton.heightAnchor.constraint(equalToConstant: 44)
         ])
     }
+    
 }

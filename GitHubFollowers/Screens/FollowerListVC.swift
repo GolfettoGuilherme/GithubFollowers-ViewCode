@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol FollowerListVCDelegate: class {
+    func didRequestFollowers(for username: String)
+}
+
 class FollowerListVC: UIViewController {
     
     enum Section { case main }
@@ -157,8 +161,9 @@ extension FollowerListVC: UICollectionViewDelegate {
         let activeArray = isSearching ? filterFollowers : followers
         let follower = activeArray[indexPath.item]
         
-        let destVC = UserInfoVC()
-        destVC.username = follower.login
+        let destVC        = UserInfoVC()
+        destVC.username   = follower.login
+        destVC.delegate   = self //vai fazer essa classe ouvir o evento que a UserInfoVC disparar
         let navController = UINavigationController(rootViewController: destVC)
         present(navController, animated: true)
     }
@@ -184,4 +189,19 @@ extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
         updateData(on: followers)
     }
 
+}
+
+
+extension FollowerListVC: FollowerListVCDelegate {
+    
+    func didRequestFollowers(for username: String) {
+        self.username = username
+        title         = username
+        page          = 1
+        followers.removeAll()
+        filterFollowers.removeAll()
+        collectionView.setContentOffset(.zero, animated: true) //voltar a colletionview ao topo
+        getFollowers(username: username, page: page)
+    }
+    
 }

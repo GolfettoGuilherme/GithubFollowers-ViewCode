@@ -21,4 +21,18 @@ class GFFollowerVC: GFItemInfoVC {
         itemInfoViewTwo.set(itemInfoType: .following, withCount: user.following)
         actionButton.set(backgroundColor: .systemGreen , title: "Get Followers")
     }
+    
+    override func actionButtonTapped() {
+        guard user.followers != 0 else {
+            presentGFAlertOnMainThread(
+                title: "No Followers :(",
+                message: "This sucker does not have followers. shame 🤡",
+                bnuttonTitle: "OK"
+            )
+            return
+        }
+        
+        delegate.didTapGetFollowers(for: user)
+        dismiss(animated: true)
+    }
 }
