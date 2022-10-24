@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct UIHelper {
+enum UIHelper {
     
     //separei porque só tinha usos de variaveis internas
     // o ViewController não precisa saber disso

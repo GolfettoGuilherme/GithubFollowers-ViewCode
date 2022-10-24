@@ -10,17 +10,28 @@ import Foundation
 //herança
 class GFFollowerVC: GFItemInfoVC {
     
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureItems()
+        configure()
     }
     
-    private func configureItems(){
-        //coisas especificas
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure(){
         itemInfoViewOne.set(itemInfoType: .followers, withCount: user.followers)
         itemInfoViewTwo.set(itemInfoType: .following, withCount: user.following)
         actionButton.set(backgroundColor: .systemGreen , title: "Get Followers")
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - objc methods
+    //-----------------------------------------------------------------------
     
     override func actionButtonTapped() {
         guard user.followers != 0 else {

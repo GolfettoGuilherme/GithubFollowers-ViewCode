@@ -9,6 +9,10 @@ import UIKit
 
 class GFBodyLabel: UILabel {
     
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         configure()
@@ -18,11 +22,14 @@ class GFBodyLabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(textAlign: NSTextAlignment) {
-        super.init(frame: .zero)
+    convenience init(textAlign: NSTextAlignment) {
+        self.init(frame: .zero)
         self.textAlignment = textAlign
-        configure()
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
     
     private func configure() {
         textColor                 = .secondaryLabel

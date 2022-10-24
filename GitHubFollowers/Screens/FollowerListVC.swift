@@ -7,32 +7,61 @@
 
 import UIKit
 
-protocol FollowerListVCDelegate: class {
+protocol FollowerListVCDelegate: AnyObject {
     func didRequestFollowers(for username: String)
 }
 
-class FollowerListVC: UIViewController {
+class FollowerListVC: GFDataLoadingVC {
     
-    enum Section { case main }
+    //-----------------------------------------------------------------------
+    // MARK: - Private properties
+    //-----------------------------------------------------------------------
     
-    var username: String!
+    enum Section {
+        case main
+    }
+    
     var page = 1
     var hasMoreFollowers = true
     var isSearching = false
     var followers: [Follower] = []
     var filterFollowers: [Follower] = []
     
+    var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Injected properties
+    //-----------------------------------------------------------------------
+    
+    var username: String!
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
+    
+    init(username: String) {
+        super.init(nibName: nil, bundle: nil)
+        self.username = username
+        title = username
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
     
     var collectionView: UICollectionView!
-    var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
-
+    
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureViewController()
-        configureCollectionView()
-        getFollowers(username: username, page: page)
-        configureDataSource()
-        configureSearchController()
+        configure()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -40,12 +69,31 @@ class FollowerListVC: UIViewController {
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
-    func configureViewController() {
-        view.backgroundColor = .systemBackground
-        navigationController?.navigationBar.prefersLargeTitles = true
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure() {
+        configureViewController()
+        configureCollectionView()
+        getFollowers(username: username, page: page)
+        configureDataSource()
+        configureSearchController()
     }
     
-    func configureCollectionView() {
+    private func configureViewController() {
+        view.backgroundColor = .systemBackground
+        navigationController?.navigationBar.prefersLargeTitles = true
+        
+        let addButton = UIBarButtonItem(
+            barButtonSystemItem: .add,
+            target: self,
+            action: #selector(addButtonTapped)
+        )
+        navigationItem.rightBarButtonItem = addButton
+    }
+    
+    private func configureCollectionView() {
         collectionView = UICollectionView(
             frame: view.bounds,
             collectionViewLayout: UIHelper.create3CollumnFlowLayout(in: view)
@@ -59,7 +107,7 @@ class FollowerListVC: UIViewController {
         )
     }
     
-    func configureSearchController() {
+    private func configureSearchController() {
         let searchController = UISearchController()
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = "Search for a username"
@@ -68,6 +116,10 @@ class FollowerListVC: UIViewController {
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Network call
+    //-----------------------------------------------------------------------
     
     func getFollowers(username:String, page: Int) {
         showLoadingView()
@@ -140,7 +192,47 @@ class FollowerListVC: UIViewController {
             self.dataSource.apply(snapshot, animatingDifferences: true)
         }
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Objc Methods
+    //-----------------------------------------------------------------------
+    
+    @objc func addButtonTapped() {
+        showLoadingView()
+        
+        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
+            guard let self = self else { return }
+            self.dismissLoadingView()
+            
+            switch result {
+            case .success(let user):
+                
+                let favorite = Follower(login: user.login, avatarUrl: user.avatarUrl)
+                
+                PersistenceManager.updateWith(favorite: favorite, actionType: .add) { [weak self] error in
+                    
+                    guard let self = self else { return }
+                    
+                    guard let error = error else {
+                        self.presentGFAlertOnMainThread(title: "Success", message: "You saved this user ", bnuttonTitle: "Horray")
+                        return
+                    }
+                    
+                    self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, bnuttonTitle: "Ok")
+                }
+                
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(title: "Something went wrong", message: error.rawValue, bnuttonTitle: "Ok")
+                
+            }
+        }
+    }
+    
 }
+
+//-----------------------------------------------------------------------
+// MARK: - UICollectionViewDelegate
+//-----------------------------------------------------------------------
 
 extension FollowerListVC: UICollectionViewDelegate {
     
@@ -169,6 +261,10 @@ extension FollowerListVC: UICollectionViewDelegate {
     }
 }
 
+//-----------------------------------------------------------------------
+// MARK: - UISearchBarDelegate
+//-----------------------------------------------------------------------
+
 extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -191,6 +287,9 @@ extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
 
 }
 
+//-----------------------------------------------------------------------
+// MARK: - FollowerListVCDelegate
+//-----------------------------------------------------------------------
 
 extension FollowerListVC: FollowerListVCDelegate {
     

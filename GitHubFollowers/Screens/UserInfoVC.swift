@@ -7,12 +7,16 @@
 
 import UIKit
 
-protocol UserInfoVCDelegate: class {
+protocol UserInfoVCDelegate: AnyObject {
     func didTapGithubProfile(for user: User)
     func didTapGetFollowers(for user: User)
 }
 
 class UserInfoVC: UIViewController {
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
     
     let headerView  = UIView()
     let itemViewOne = UIView()
@@ -20,57 +24,19 @@ class UserInfoVC: UIViewController {
     let dateLabel   = GFBodyLabel(textAlign: .center)
     var itemViews: [UIView] = []
     
+    //-----------------------------------------------------------------------
+    // MARK: - Properties
+    //-----------------------------------------------------------------------
+    
     var username: String!
     weak var delegate: FollowerListVCDelegate!
+    
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureViewController()
-        layoutUI()
-        getUser()
-    }
-    
-    func getUser(){
-        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
-            guard let self = self else { return }
-            
-            switch result {
-            case .success(let user):
-                DispatchQueue.main.async { self.configureUIElements(with: user) }
-                
-            case .failure(let error):
-                self.presentGFAlertOnMainThread(
-                    title: "Something went worng",
-                    message: error.rawValue,
-                    bnuttonTitle: "Ok"
-                )
-            }
-        }
-    }
-    
-    func configureUIElements(with user: User) {
-        let repoItemVC          = GFRepoItemVC(user: user)
-        repoItemVC.delegate     = self
-        
-        let followerItemVC      = GFFollowerVC(user: user)
-        followerItemVC.delegate = self
-        
-        self.add(
-            childVC: GFUserInfoHeaderVC(user: user),
-            to: self.headerView
-        )
-        self.add(
-            childVC: repoItemVC,
-            to: self.itemViewOne
-        )
-        self.add(
-            childVC: followerItemVC,
-            to: self.itemViewTwo
-        )
-        self.dateLabel.text = "Github since \(user.createdAt.converToDisplayFormat())"
-    }
-    
-    func configureViewController() {
         view.backgroundColor = .systemBackground
         let doneButton = UIBarButtonItem(
             barButtonSystemItem: .done,
@@ -78,9 +44,16 @@ class UserInfoVC: UIViewController {
             action: #selector(dismissVc)
         )
         navigationItem.rightBarButtonItem = doneButton
+        
+        configure()
+        getUser()
     }
     
-    func layoutUI(){
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure(){
         let padding: CGFloat = 20
         let itemHeight:CGFloat = 140
         
@@ -112,6 +85,48 @@ class UserInfoVC: UIViewController {
         ])
     }
     
+    private func getUser(){
+        NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let user):
+                DispatchQueue.main.async { self.configureUIElements(with: user) }
+                
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(
+                    title: "Something went worng",
+                    message: error.rawValue,
+                    bnuttonTitle: "Ok"
+                )
+            }
+        }
+    }
+    
+    private func configureUIElements(with user: User) {
+        let repoItemVC          = GFRepoItemVC(user: user)
+        repoItemVC.delegate     = self
+        
+        let followerItemVC      = GFFollowerVC(user: user)
+        followerItemVC.delegate = self
+        
+        self.add(
+            childVC: GFUserInfoHeaderVC(user: user),
+            to: self.headerView
+        )
+        self.add(
+            childVC: repoItemVC,
+            to: self.itemViewOne
+        )
+        self.add(
+            childVC: followerItemVC,
+            to: self.itemViewTwo
+        )
+        self.dateLabel.text = "Github since \(user.createdAt.convertToMonthYearFormat())"
+    }
+    
+    
+    
     func add(childVC: UIViewController, to container: UIView) {
         addChild(childVC)
         container.addSubview(childVC.view)
@@ -124,6 +139,10 @@ class UserInfoVC: UIViewController {
     }
 
 }
+
+//-----------------------------------------------------------------------
+// MARK: - Delegates
+//-----------------------------------------------------------------------
 
 extension UserInfoVC: UserInfoVCDelegate {
     

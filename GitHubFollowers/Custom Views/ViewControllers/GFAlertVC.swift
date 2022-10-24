@@ -9,16 +9,27 @@ import UIKit
 
 class GFAlertVC: UIViewController {
     
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
+    
     let containerView = UIView()
     let titleLabel = GFTitleLabel(textAlign: .center, fontSize: 20)
     let messageLabel = GFBodyLabel(textAlign: .center)
     let actionButton = GFButton(backgroundColor: .systemPink, title: "Ok")
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Properties
+    //-----------------------------------------------------------------------
 
     var alertTitle: String?
     var message: String?
     var buttonTitle: String?
-    
     let padding: CGFloat = 20
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
     
     init(title:String, message:String, buttonTitle: String) {
         super.init(nibName: nil, bundle: nil)
@@ -31,16 +42,28 @@ class GFAlertVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //-----------------------------------------------------------------------
+    // MARK: - View Lifecycle
+    //-----------------------------------------------------------------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.75)
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.75)
+        configure()
+    }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure() {
         configureContainerView()
         configureTitleLabel()
         configureActionButton()
         configureMessageLabel()
     }
     
-    func configureContainerView() {
+    private func configureContainerView() {
         view.addSubview(containerView)
         containerView.backgroundColor = .systemBackground
         containerView.layer.cornerRadius = 16
@@ -56,7 +79,7 @@ class GFAlertVC: UIViewController {
         ])
     }
     
-    func configureTitleLabel() {
+    private func configureTitleLabel() {
         containerView.addSubview(titleLabel)
         titleLabel.text = alertTitle ?? "Something went wrong"
         
@@ -68,7 +91,7 @@ class GFAlertVC: UIViewController {
         ])
     }
     
-    func configureActionButton() {
+    private func configureActionButton() {
         containerView.addSubview(actionButton)
         actionButton.setTitle(buttonTitle ?? "Ok", for: .normal)
         actionButton.addTarget(self, action: #selector(dismissVC), for: .touchUpInside)
@@ -81,7 +104,7 @@ class GFAlertVC: UIViewController {
         ])
     }
     
-    func configureMessageLabel() {
+    private func configureMessageLabel() {
         containerView.addSubview(messageLabel)
         messageLabel.text = message ?? "Unable to complete request"
         messageLabel.numberOfLines = 4
@@ -93,6 +116,10 @@ class GFAlertVC: UIViewController {
             messageLabel.bottomAnchor.constraint(equalTo: actionButton.topAnchor, constant: -12),
         ])
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - objc methods
+    //-----------------------------------------------------------------------
     
     @objc func dismissVC() {
         dismiss(animated: true)

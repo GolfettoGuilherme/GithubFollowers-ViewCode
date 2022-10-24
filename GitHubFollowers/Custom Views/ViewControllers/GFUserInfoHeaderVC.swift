@@ -9,12 +9,20 @@ import UIKit
 
 class GFUserInfoHeaderVC: UIViewController {
     
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
+    
     let avatarImageView = GFAvatarImageView(frame: .zero)
     let usernameLabel = GFTitleLabel(textAlign: .left, fontSize: 34)
     let nameLabel = GFSecondaryTitleLabel(fontSize: 18)
     let locationImageView = UIImageView()
     let locationLabel = GFSecondaryTitleLabel(fontSize: 18)
     let bioLabel = GFBodyLabel(textAlign: .left)
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Injected properties
+    //-----------------------------------------------------------------------
     
     var user: User!
     
@@ -27,35 +35,27 @@ class GFUserInfoHeaderVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        addSubviews()
-        layoutUI()
-        configureUIElements()
+        configure()
     }
     
-    func configureUIElements() {
-        avatarImageView.downloadImage(from: user.avatarUrl)
-        usernameLabel.text = user.login
-        nameLabel.text = user.name ?? ""
-        locationLabel.text = user.location ?? "No Location"
-        bioLabel.text = user.bio ?? "No Bio available"
-        bioLabel.numberOfLines = 3
-        
-        locationImageView.image = UIImage(systemName: SFSymbols.location)
-        locationImageView.tintColor = .secondaryLabel
-    }
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
     
-    func addSubviews() {
+    private func configure() {
         view.addSubview(avatarImageView)
         view.addSubview(usernameLabel)
         view.addSubview(nameLabel)
         view.addSubview(locationImageView)
         view.addSubview(locationLabel)
         view.addSubview(bioLabel)
-    }
-    
-    func layoutUI() {
+        
         let padding: CGFloat = 20
         let textImagePadding: CGFloat = 12
         locationImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -92,5 +92,27 @@ class GFUserInfoHeaderVC: UIViewController {
             bioLabel.heightAnchor.constraint(equalToConstant: 60)
             
         ])
+        
+        donwloadAvatarImage()
+        
+        usernameLabel.text = user.login
+        nameLabel.text = user.name ?? ""
+        locationLabel.text = user.location ?? "No Location"
+        bioLabel.text = user.bio ?? "No Bio available"
+        bioLabel.numberOfLines = 3
+        
+        locationImageView.image = SFSymbols.location
+        locationImageView.tintColor = .secondaryLabel
+    }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Private methods
+    //-----------------------------------------------------------------------
+    
+    private func donwloadAvatarImage() {
+        NetworkManager.shared.downloadImage(from: user.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            DispatchQueue.main.async { self.avatarImageView.image = image }
+        }
     }
 }

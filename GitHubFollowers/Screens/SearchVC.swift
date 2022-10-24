@@ -7,21 +7,32 @@
 
 import UIKit
 
-class SearchVC: UIViewController {
+class SearchVC: GFDataLoadingVC {
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Properties
+    //-----------------------------------------------------------------------
+    
+    var isUsernameEntered: Bool { !userNameTextField.text!.isEmpty }
+    
+    var logoImageViewTopContraint: NSLayoutConstraint!
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
     
     let logoImageView      = UIImageView()
     let userNameTextField  = GFTextField()
     let callToActionButton = GFButton(backgroundColor: .systemGreen, title: "Get Followers")
     
-    var isUsernameEntered: Bool { !userNameTextField.text!.isEmpty }
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground //usar isso faz ele ajustar sozinho pro darkmode
-        configureLogoImageView()
-        configureTextField()
-        configureCallToActionButton()
-        createDismissKeyboardTapGesture()
+        view.backgroundColor = .systemBackground
+        configure()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -31,11 +42,67 @@ class SearchVC: UIViewController {
         navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
-    func createDismissKeyboardTapGesture() {
-        //isso serve para ocultar o teclado sempre que o usuario clicar fora da tela. muito util
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure() {
+        configureLogoImageView()
+        configureTextField()
+        configureCallToActionButton()
+        hideKeyboard()
+    }
+    
+    private func configureLogoImageView() {
+        view.addSubview(logoImageView)
+        logoImageView.translatesAutoresizingMaskIntoConstraints = false
+        logoImageView.image = Images.ghLogo
+        
+        NSLayoutConstraint.activate([
+            //geralmente são 4 constrains, width, height, eixo X e eixo Y. se passar disso, menos, provavelmente está errado
+            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
+            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoImageView.heightAnchor.constraint(equalToConstant: 200),
+            logoImageView.widthAnchor.constraint(equalToConstant: 200)
+        ])
+    }
+    
+    private func configureTextField() {
+        view.addSubview(userNameTextField)
+        userNameTextField.delegate = self
+        
+        NSLayoutConstraint.activate([
+            userNameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 48),
+            userNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            userNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50), //sempre negativo
+            userNameTextField.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    private func configureCallToActionButton() {
+        view.addSubview(callToActionButton)
+        callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            callToActionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
+            callToActionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
+            callToActionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50),
+            callToActionButton.heightAnchor.constraint(equalToConstant: 50)
+        ])
+    }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Gestures
+    //-----------------------------------------------------------------------
+    
+    func hideKeyboard() {
         let tap = UITapGestureRecognizer(target: self.view, action: #selector(UIView.endEditing))
         view.addGestureRecognizer(tap)
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Private methods
+    //-----------------------------------------------------------------------
     
     @objc func pushFollowerListVC() {
         //passando dados de uma tela para a proxima
@@ -49,51 +116,14 @@ class SearchVC: UIViewController {
             return
         }
         
-        let followerListVc       = FollowerListVC()
-        followerListVc.username  = userNameTextField.text
-        followerListVc.title     = userNameTextField.text
+        let followerListVc = FollowerListVC(username: userNameTextField.text!)
         navigationController?.pushViewController(followerListVc, animated: true)
     }
-    
-    
-    func configureLogoImageView() {
-        view.addSubview(logoImageView)
-        logoImageView.translatesAutoresizingMaskIntoConstraints = false
-        logoImageView.image = UIImage(named: "gh-logo")!
-        
-        NSLayoutConstraint.activate([
-            //geralmente são 4 constrains, width, height, eixo X e eixo Y. se passar disso, menos, provavelmente está errado
-            logoImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 80),
-            logoImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoImageView.heightAnchor.constraint(equalToConstant: 200),
-            logoImageView.widthAnchor.constraint(equalToConstant: 200)
-        ])
-    }
-    
-    func configureTextField() {
-        view.addSubview(userNameTextField)
-        userNameTextField.delegate = self
-        
-        NSLayoutConstraint.activate([
-            userNameTextField.topAnchor.constraint(equalTo: logoImageView.bottomAnchor, constant: 48),
-            userNameTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            userNameTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50), //sempre negativo
-            userNameTextField.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
-    
-    func configureCallToActionButton() {
-        view.addSubview(callToActionButton)
-        callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
-        
-        NSLayoutConstraint.activate([
-            callToActionButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -50), //negativo sempre
-            callToActionButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 50),
-            callToActionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -50), //negativo sempre
-            callToActionButton.heightAnchor.constraint(equalToConstant: 50)
-        ])
-    }
 }
+
+//-----------------------------------------------------------------------
+// MARK: - Delegates
+//-----------------------------------------------------------------------
 
 extension SearchVC: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

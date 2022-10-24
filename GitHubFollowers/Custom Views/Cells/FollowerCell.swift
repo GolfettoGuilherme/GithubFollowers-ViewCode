@@ -8,11 +8,23 @@
 import UIKit
 
 class FollowerCell: UICollectionViewCell {
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Static properties
+    //-----------------------------------------------------------------------
+    
     static let reuseId = "FollowerCell"
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
     
     let avatarimageView = GFAvatarImageView(frame: .zero)
     let usernameLabel = GFTitleLabel(textAlign: .center, fontSize: 16)
     
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -23,12 +35,9 @@ class FollowerCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
-    func set(follower: Follower) {
-        usernameLabel.text = follower.login
-        avatarimageView.downloadImage(from: follower.avatarUrl)
-    }
-    
+    //-----------------------------------------------------------------------
+    // MARK: - Configurations
+    //-----------------------------------------------------------------------
     
     private func configure() {
         addSubview(avatarimageView)
@@ -49,4 +58,18 @@ class FollowerCell: UICollectionViewCell {
         ])
     }
     
+    //-----------------------------------------------------------------------
+    // MARK: - Public methods
+    //-----------------------------------------------------------------------
+    
+    func set(follower: Follower) {
+        usernameLabel.text = follower.login
+        
+        NetworkManager.shared.downloadImage(from: follower.avatarUrl) { [weak self] image in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async { self.avatarimageView.image = image }
+        }
+    }
+
 }

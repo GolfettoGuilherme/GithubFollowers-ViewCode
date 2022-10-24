@@ -10,17 +10,28 @@ import UIKit
 //herança
 class GFRepoItemVC: GFItemInfoVC {
     
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureItems()
+        configure()
     }
     
-    private func configureItems(){
-        //coisas especificas
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure(){
         itemInfoViewOne.set(itemInfoType: .repos, withCount: user.publicRepos)
         itemInfoViewTwo.set(itemInfoType: .gists, withCount: user.publicGists)
         actionButton.set(backgroundColor: .systemPurple, title: "Github Profile")
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - objc methods
+    //-----------------------------------------------------------------------
     
     override func actionButtonTapped() {
         delegate.didTapGithubProfile(for: user)

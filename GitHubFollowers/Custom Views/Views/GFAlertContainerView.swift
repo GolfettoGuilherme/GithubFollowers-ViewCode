@@ -1,14 +1,14 @@
 //
-//  GFSecondaryTitleLabel.swift
+//  GFAlertContainerView.swift
 //  GitHubFollowers
 //
-//  Created by Guilherme Golfetto on 26/06/22.
+//  Created by Guilherme Golfetto on 23/10/22.
 //
 
 import UIKit
 
-class GFSecondaryTitleLabel: UILabel {
-    
+class GFAlertContainerView: UIView {
+
     //-----------------------------------------------------------------------
     // MARK: - Inicialization
     //-----------------------------------------------------------------------
@@ -22,20 +22,16 @@ class GFSecondaryTitleLabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init(fontSize: CGFloat) {
-        self.init(frame: .zero)
-        self.font = UIFont.systemFont(ofSize: fontSize, weight: .medium)
-    }
-    
     //-----------------------------------------------------------------------
     // MARK: - Configuration
     //-----------------------------------------------------------------------
     
     private func configure() {
-        textColor                 = .secondaryLabel
-        adjustsFontSizeToFitWidth = true
-        minimumScaleFactor        = 0.90
-        lineBreakMode             = .byTruncatingTail //como quebrar a linha
+        backgroundColor = .systemBackground
+        layer.cornerRadius = 16
+        layer.borderWidth = 2
+        layer.borderColor = UIColor.white.cgColor
         translatesAutoresizingMaskIntoConstraints = false
     }
+    
 }

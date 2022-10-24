@@ -1,10 +1,10 @@
 <h1 align="center">Github Followers</h1>
 
 <p align="center">
-  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/GolfettoGuilherme/MarvelSearch">
-  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/GolfettoGuilherme/MarvelSearch">
-  <img alt="Stars" src="https://img.shields.io/github/stars/GolfettoGuilherme/MarvelSearch">
-  <img alt="Repository Size" src="https://img.shields.io/github/repo-size/GolfettoGuilherme/MarvelSearch">
+  <img alt="GitHub top language" src="https://img.shields.io/github/languages/top/GolfettoGuilherme/GithubFollowers-ViewCode">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/GolfettoGuilherme/GithubFollowers-ViewCode">
+  <img alt="Stars" src="https://img.shields.io/github/stars/GolfettoGuilherme/GithubFollowers-ViewCode">
+  <img alt="Repository Size" src="https://img.shields.io/github/repo-size/GolfettoGuilherme/GithubFollowers-ViewCode">
 </p>
 
 <p align="center">
@@ -17,8 +17,9 @@
 
 <h1 align="center">
   <img alt="Home" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/home.png" width="400" />
-  <img alt="Search" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/search.png" width="400" />
-  <img alt="Hero Description" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/hero_description.png" width="400" />
+  <img alt="Favorites" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/favorites.png" width="400" />
+  <img alt="List" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/list.png" width="400" />
+  <img alt="Details" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/details.png" width="400" />
 </h1>
 
 ## :page_with_curl: Sobre
@@ -31,12 +32,6 @@ O objetivo principal desse projeto foi praticar Swift. Para isso foi utilizado o
 Esse curso é o projeto usado no curso [iOS Dev Job Interview Practice - Take Home Project](https://seanallen.teachable.com/) do Sean Allen
 
 ## :hammer: Tecnologias
-
-Este projeto foi desenvolvido com as seguintes tecnologias:
-
-- [Carthage](https://github.com/Carthage/Carthage)
-- [AlamoFire](https://github.com/Alamofire/Alamofire)
-- [AlamoFireImages](https://github.com/Alamofire/AlamofireImage)
 
 
 ## :books: Requisitos
@@ -56,6 +51,4 @@ Este projeto foi desenvolvido com as seguintes tecnologias:
   # Abrir o arquivo Github Followers.xcodeproj
 ```
 
-
-
-Feito com 😡 por Guilherme Golfetto (Que odeia Marvel) 👋🏻 [Get in touch!](https://github.com/GolfettoGuilherme)
+Feito por Guilherme Golfetto 👋🏻 [Get in touch!](https://github.com/GithubFollowers-ViewCode)

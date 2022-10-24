@@ -9,23 +9,26 @@ import UIKit
 
 class GFItemInfoVC: UIViewController {
     
+    //-----------------------------------------------------------------------
+    // MARK: - Subviews
+    //-----------------------------------------------------------------------
+    
     let stackView       = UIStackView()
     let itemInfoViewOne = GFItemInfoView()
     let itemInfoViewTwo = GFItemInfoView()
     let actionButton    = GFButton()
-    //não vou configurar o botão pq essa classe
-    //só vai ter a estrutura da interface
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Injected properties
+    //-----------------------------------------------------------------------
     
     var user: User!
-    weak var delegate: UserInfoVCDelegate! //prevent retain cycle
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureActionButton()
-        configureBackgroundView()
-        layoutUI()
-        configureStackView()
-    }
+    weak var delegate: UserInfoVCDelegate!
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
     
     init(user: User) {
         super.init(nibName: nil, bundle: nil)
@@ -36,26 +39,29 @@ class GFItemInfoVC: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configureBackgroundView() {
-        view.layer.cornerRadius = 18
-        view.backgroundColor = .secondarySystemBackground
+    //-----------------------------------------------------------------------
+    // MARK: - View lifecycle
+    //-----------------------------------------------------------------------
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configure()
     }
     
-    private func configureStackView() {
+    //-----------------------------------------------------------------------
+    // MARK: - Configuration
+    //-----------------------------------------------------------------------
+    
+    private func configure() {
+        view.layer.cornerRadius = 18
+        view.backgroundColor = .secondarySystemBackground
+        
         stackView.axis         = .horizontal
         stackView.distribution = .equalSpacing
         
         stackView.addArrangedSubview(itemInfoViewOne)//precisa ser esse
         stackView.addArrangedSubview(itemInfoViewTwo)
-    }
-    
-    private func configureActionButton() {
-        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
-    }
-    
-    @objc func actionButtonTapped() {} // nas subclasses vamos dar override nesse metodo
-    
-    private func layoutUI() {
+        
         view.addSubview(stackView)
         view.addSubview(actionButton)
         
@@ -73,6 +79,14 @@ class GFItemInfoVC: UIViewController {
             actionButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
             actionButton.heightAnchor.constraint(equalToConstant: 44)
         ])
+
+        actionButton.addTarget(self, action: #selector(actionButtonTapped), for: .touchUpInside)
     }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - objc methods
+    //-----------------------------------------------------------------------
+    
+    @objc func actionButtonTapped() {} // nas subclasses vamos dar override nesse metodo
     
 }

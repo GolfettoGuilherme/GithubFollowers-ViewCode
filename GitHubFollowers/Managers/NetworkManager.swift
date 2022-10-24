@@ -7,20 +7,36 @@
 
 import UIKit
 
-//singleton
 class NetworkManager {
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Static properties
+    //-----------------------------------------------------------------------
+    
     static let shared = NetworkManager()
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Private properties
+    //-----------------------------------------------------------------------
+    
     private let baseURL = "https:/api.github.com/users/"
     
     let cache = NSCache<NSString, UIImage>()
     
-    private init() { } //deixando o init privado, vamos garantir que seja sempre a mesma intancia ativa
+    //-----------------------------------------------------------------------
+    // MARK: - Inicialization
+    //-----------------------------------------------------------------------
+    
+    private init() { }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Public methods
+    //-----------------------------------------------------------------------
     
     func getFollowers(
         for username: String,
         page: Int,
-        completed: @escaping (Result<[Follower], GFError>) -> Void
-    ) {
+        completed: @escaping (Result<[Follower], GFError>) -> Void) {
         let endpoint = baseURL + "\(username)/followers?per_page=100&page=\(page)"
         
         guard let url = URL(string: endpoint) else {
@@ -64,8 +80,7 @@ class NetworkManager {
     
     func getUserInfo(
         for username: String,
-        completed: @escaping (Result<User, GFError>) -> Void
-    ) {
+        completed: @escaping (Result<User, GFError>) -> Void) {
         let endpoint = baseURL + username
         
         guard let url = URL(string: endpoint) else {
@@ -95,14 +110,48 @@ class NetworkManager {
             do {
                 let decoder = JSONDecoder()
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
-                let user = try decoder.decode(
-                    User.self, from: data
-                )
+                decoder.dateDecodingStrategy = .iso8601
+                
+                let user = try decoder.decode(User.self, from: data)
                 completed(.success(user))
+                
             } catch {
                 completed(.failure(.invalidData))
             }
         }
+        task.resume()
+    }
+    
+    func downloadImage(from urlString: String, completed: @escaping(UIImage?) -> Void ) {
+        
+        let cacheKey = NSString(string: urlString)
+        
+        if let image = cache.object(forKey: cacheKey) {
+            completed(image)
+            return
+        }
+        
+        guard let url = URL(string: urlString) else {
+            completed(nil)
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+            
+            guard let self = self,
+                  error == nil,
+                  let response = response as? HTTPURLResponse, response.statusCode == 200,
+                  let data = data,
+                  let image = UIImage(data: data) else {
+                completed(nil)
+                return
+            }
+            
+            self.cache.setObject(image, forKey: cacheKey)
+            
+            completed(image)
+        }
+        
         task.resume()
     }
 }
