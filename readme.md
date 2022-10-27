@@ -16,10 +16,10 @@
 </p>
 
 <h1 align="center">
-  <img alt="Home" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/home.png" width="400" />
-  <img alt="Favorites" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/favorites.png" width="400" />
-  <img alt="List" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/list.png" width="400" />
-  <img alt="Details" src="https://github.com/GolfettoGuilherme/MarvelSearch/blob/main/Marvel%20Search/Assets/details.png" width="400" />
+  <img alt="Home" src="https://github.com/GolfettoGuilherme/GithubFollowers-ViewCode/blob/main/Assets/home.png" width="400" />
+  <img alt="Favorites" src="https://github.com/GolfettoGuilherme/GithubFollowers-ViewCode/blob/main/Assets/favorites.png" width="400" />
+  <img alt="List" src="https://github.com/GolfettoGuilherme/GithubFollowers-ViewCode/blob/main/Assets/list.png" width="400" />
+  <img alt="Details" src="https://github.com/GolfettoGuilherme/GithubFollowers-ViewCode/blob/main/Assets/details.png" width="400" />
 </h1>
 
 ## :page_with_curl: Sobre
@@ -35,7 +35,6 @@ Esse curso é o projeto usado no curso [iOS Dev Job Interview Practice - Take Ho
 
 
 ## :books: Requisitos
-- Um Mac
 - Ter [**Git**](https://git-scm.com/) para clonar o projeto.
 - Ter [**XCode**](https://developer.apple.com/xcode/) instalado.
 
@@ -43,12 +42,12 @@ Esse curso é o projeto usado no curso [iOS Dev Job Interview Practice - Take Ho
 ## :rocket: Começando
 ``` bash
   # Clonar o projeto:
-  $ https://github.com/GolfettoGuilherme/MarvelSearch
+  $ https://github.com/GolfettoGuilherme/GithubFollowers-ViewCode
 
   # Entrar no diretório:
-    MarvelSearch
+    GithubFollowers-ViewCode
   
   # Abrir o arquivo Github Followers.xcodeproj
 ```
 
-Feito por Guilherme Golfetto 👋🏻 [Get in touch!](https://github.com/GithubFollowers-ViewCode)
+Feito por Guilherme Golfetto 👋🏻 [Get in touch!(or not)](https://github.com/GolfettoGuilherme)
