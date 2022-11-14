@@ -47,6 +47,7 @@ class SearchVC: GFDataLoadingVC {
     //-----------------------------------------------------------------------
     
     private func configure() {
+        view.addSubviews(logoImageView, userNameTextField, callToActionButton)
         configureLogoImageView()
         configureTextField()
         configureCallToActionButton()
@@ -54,7 +55,6 @@ class SearchVC: GFDataLoadingVC {
     }
     
     private func configureLogoImageView() {
-        view.addSubview(logoImageView)
         logoImageView.translatesAutoresizingMaskIntoConstraints = false
         logoImageView.image = Images.ghLogo
         
@@ -68,7 +68,6 @@ class SearchVC: GFDataLoadingVC {
     }
     
     private func configureTextField() {
-        view.addSubview(userNameTextField)
         userNameTextField.delegate = self
         
         NSLayoutConstraint.activate([
@@ -80,7 +79,6 @@ class SearchVC: GFDataLoadingVC {
     }
     
     private func configureCallToActionButton() {
-        view.addSubview(callToActionButton)
         callToActionButton.addTarget(self, action: #selector(pushFollowerListVC), for: .touchUpInside)
         
         NSLayoutConstraint.activate([

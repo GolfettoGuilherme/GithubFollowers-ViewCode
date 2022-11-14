@@ -14,7 +14,7 @@ class GFAvatarImageView: UIImageView {
     //-----------------------------------------------------------------------
     
     let cache = NetworkManager.shared.cache
-    let placeholderImage = UIImage(named: "avatar-placeholder")!
+    let placeholderImage = Images.placeholder
 
     //-----------------------------------------------------------------------
     // MARK: - Inicialization

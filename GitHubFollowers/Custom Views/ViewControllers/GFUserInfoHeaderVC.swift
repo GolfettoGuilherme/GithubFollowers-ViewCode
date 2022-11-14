@@ -49,12 +49,7 @@ class GFUserInfoHeaderVC: UIViewController {
     //-----------------------------------------------------------------------
     
     private func configure() {
-        view.addSubview(avatarImageView)
-        view.addSubview(usernameLabel)
-        view.addSubview(nameLabel)
-        view.addSubview(locationImageView)
-        view.addSubview(locationLabel)
-        view.addSubview(bioLabel)
+        view.addSubviews(avatarImageView, avatarImageView, usernameLabel, nameLabel, locationImageView, locationLabel, bioLabel)
         
         let padding: CGFloat = 20
         let textImagePadding: CGFloat = 12
@@ -89,7 +84,7 @@ class GFUserInfoHeaderVC: UIViewController {
             bioLabel.topAnchor.constraint(equalTo: avatarImageView.bottomAnchor, constant: textImagePadding),
             bioLabel.leadingAnchor.constraint(equalTo: avatarImageView.leadingAnchor),
             bioLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bioLabel.heightAnchor.constraint(equalToConstant: 60)
+            bioLabel.heightAnchor.constraint(equalToConstant: 90)
             
         ])
         

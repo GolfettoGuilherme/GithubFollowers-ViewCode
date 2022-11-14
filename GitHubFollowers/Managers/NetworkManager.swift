@@ -65,7 +65,6 @@ class NetworkManager {
             
             do {
                 let decoder = JSONDecoder()
-                // avatar_url == avatarUrl
                 decoder.keyDecodingStrategy = .convertFromSnakeCase
                 let followers = try decoder.decode(
                     [Follower].self, from: data

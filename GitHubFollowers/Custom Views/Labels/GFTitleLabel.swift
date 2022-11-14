@@ -23,7 +23,7 @@ class GFTitleLabel: UILabel {
     }
     
     convenience init(textAlign: NSTextAlignment, fontSize: CGFloat) {
-        self.init(frame: .zero)
+        self.init(frame: .zero) //chama o init de cima
         self.textAlignment = textAlign
         self.font = UIFont.systemFont(ofSize: fontSize, weight: .bold)
     }

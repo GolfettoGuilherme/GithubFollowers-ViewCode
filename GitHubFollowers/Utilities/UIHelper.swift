@@ -9,9 +9,7 @@ import UIKit
 
 enum UIHelper {
     
-    //separei porque só tinha usos de variaveis internas
-    // o ViewController não precisa saber disso
-    //por isso o refactor
+    //separei porque só tinha usos de variaveis internas, o ViewController não precisa saber disso
     static func create3CollumnFlowLayout(in view: UIView) -> UICollectionViewFlowLayout {
         let width = view.bounds.width
         let padding: CGFloat = 12

@@ -24,8 +24,6 @@ class GFItemInfoVC: UIViewController {
     
     var user: User!
     
-    weak var delegate: UserInfoVCDelegate!
-    
     //-----------------------------------------------------------------------
     // MARK: - Inicialization
     //-----------------------------------------------------------------------
@@ -62,8 +60,7 @@ class GFItemInfoVC: UIViewController {
         stackView.addArrangedSubview(itemInfoViewOne)//precisa ser esse
         stackView.addArrangedSubview(itemInfoViewTwo)
         
-        view.addSubview(stackView)
-        view.addSubview(actionButton)
+        view.addSubviews(stackView, actionButton)
         
         stackView.translatesAutoresizingMaskIntoConstraints = false
         let padding:CGFloat = 20

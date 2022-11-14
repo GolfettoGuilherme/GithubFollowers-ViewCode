@@ -8,8 +8,7 @@
 import UIKit
 
 protocol UserInfoVCDelegate: AnyObject {
-    func didTapGithubProfile(for user: User)
-    func didTapGetFollowers(for user: User)
+    func didRequestFollowers(for username: String)
 }
 
 class UserInfoVC: UIViewController {
@@ -17,6 +16,9 @@ class UserInfoVC: UIViewController {
     //-----------------------------------------------------------------------
     // MARK: - Subviews
     //-----------------------------------------------------------------------
+    
+    let scrollview  = UIScrollView()
+    let contentView = UIView()
     
     let headerView  = UIView()
     let itemViewOne = UIView()
@@ -29,7 +31,7 @@ class UserInfoVC: UIViewController {
     //-----------------------------------------------------------------------
     
     var username: String!
-    weak var delegate: FollowerListVCDelegate!
+    weak var delegate: UserInfoVCDelegate!
     
     //-----------------------------------------------------------------------
     // MARK: - View lifecycle
@@ -45,6 +47,7 @@ class UserInfoVC: UIViewController {
         )
         navigationItem.rightBarButtonItem = doneButton
         
+        configureScrollView()
         configure()
         getUser()
     }
@@ -52,6 +55,18 @@ class UserInfoVC: UIViewController {
     //-----------------------------------------------------------------------
     // MARK: - Configuration
     //-----------------------------------------------------------------------
+    
+    private func configureScrollView(){
+        view.addSubview(scrollview)
+        scrollview.addSubview(contentView)
+        scrollview.pintToEdges(of: view)
+        contentView.pintToEdges(of: scrollview)
+        
+        NSLayoutConstraint.activate([
+            contentView.widthAnchor.constraint(equalTo: scrollview.widthAnchor),
+            contentView.heightAnchor.constraint(equalToConstant: 600)
+        ])
+    }
     
     private func configure(){
         let padding: CGFloat = 20
@@ -61,18 +76,18 @@ class UserInfoVC: UIViewController {
         itemViews = [headerView, itemViewOne, itemViewTwo, dateLabel]
         
         for itemview in itemViews {
-            view.addSubview(itemview)
+            contentView.addSubview(itemview)
             itemview.translatesAutoresizingMaskIntoConstraints = false
             
             NSLayoutConstraint.activate([
-                itemview.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: padding),
-                itemview.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -padding),
+                itemview.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: padding),
+                itemview.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -padding),
             ])
         }
         
         NSLayoutConstraint.activate([
-            headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            headerView.heightAnchor.constraint(equalToConstant: 180),
+            headerView.topAnchor.constraint(equalTo: contentView.topAnchor),
+            headerView.heightAnchor.constraint(equalToConstant: 210),
             
             itemViewOne.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: padding),
             itemViewOne.heightAnchor.constraint(equalToConstant: itemHeight),
@@ -81,9 +96,29 @@ class UserInfoVC: UIViewController {
             itemViewTwo.heightAnchor.constraint(equalToConstant: itemHeight),
             
             dateLabel.topAnchor.constraint(equalTo: itemViewTwo.bottomAnchor, constant: padding),
-            dateLabel.heightAnchor.constraint(equalToConstant: 18)
+            dateLabel.heightAnchor.constraint(equalToConstant: 50)
         ])
     }
+    
+    private func configureUIElements(with user: User) {
+        self.add(
+            childVC: GFUserInfoHeaderVC(user: user),
+            to: self.headerView
+        )
+        self.add(
+            childVC: GFRepoItemVC(user: user, delegate: self),
+            to: self.itemViewOne
+        )
+        self.add(
+            childVC: GFFollowerVC(user: user, delegate: self),
+            to: self.itemViewTwo
+        )
+        self.dateLabel.text = "Github since \(user.createdAt.convertToMonthYearFormat())"
+    }
+    
+    //-----------------------------------------------------------------------
+    // MARK: - Private methods
+    //-----------------------------------------------------------------------
     
     private func getUser(){
         NetworkManager.shared.getUserInfo(for: username) { [weak self] result in
@@ -103,30 +138,6 @@ class UserInfoVC: UIViewController {
         }
     }
     
-    private func configureUIElements(with user: User) {
-        let repoItemVC          = GFRepoItemVC(user: user)
-        repoItemVC.delegate     = self
-        
-        let followerItemVC      = GFFollowerVC(user: user)
-        followerItemVC.delegate = self
-        
-        self.add(
-            childVC: GFUserInfoHeaderVC(user: user),
-            to: self.headerView
-        )
-        self.add(
-            childVC: repoItemVC,
-            to: self.itemViewOne
-        )
-        self.add(
-            childVC: followerItemVC,
-            to: self.itemViewTwo
-        )
-        self.dateLabel.text = "Github since \(user.createdAt.convertToMonthYearFormat())"
-    }
-    
-    
-    
     func add(childVC: UIViewController, to container: UIView) {
         addChild(childVC)
         container.addSubview(childVC.view)
@@ -144,7 +155,7 @@ class UserInfoVC: UIViewController {
 // MARK: - Delegates
 //-----------------------------------------------------------------------
 
-extension UserInfoVC: UserInfoVCDelegate {
+extension UserInfoVC: GFRepoInfoVCDelegate {
     
     func didTapGithubProfile(for user: User) {
         guard let url = URL(string: user.htmlUrl) else {
@@ -158,9 +169,12 @@ extension UserInfoVC: UserInfoVCDelegate {
         
         presentSafariVC(with: url)
     }
+}
+
+extension UserInfoVC: GFFollwerCDelegate {
     
     func didTapGetFollowers(for user: User) {
         delegate.didRequestFollowers(for: user.login)
     }
-
 }
+
