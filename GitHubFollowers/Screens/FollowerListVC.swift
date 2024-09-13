@@ -9,31 +9,42 @@ import UIKit
 
 class FollowerListVC: GFDataLoadingVC {
     
-    //-----------------------------------------------------------------------
-    // MARK: - Private properties
-    //-----------------------------------------------------------------------
+    // MARK: - Enums
     
     enum Section {
         case main
     }
     
+    // MARK: - Subviews
+    
+    private lazy var collectionView: UICollectionView = {
+        let collectionView = UICollectionView(
+            frame: view.bounds,
+            collectionViewLayout: UIHelper.create3CollumnFlowLayout(in: view)
+        )
+        collectionView.backgroundColor = .systemBackground
+        collectionView.register(
+            FollowerCell.self,
+            forCellWithReuseIdentifier: FollowerCell.reuseId
+        )
+        collectionView.delegate = self
+        return collectionView
+    }()
+    
+    // MARK: - Private properties
+
     var page = 1
     var hasMoreFollowers = true
     var isSearching = false
     var followers: [Follower] = []
     var filterFollowers: [Follower] = []
-    
     var dataSource: UICollectionViewDiffableDataSource<Section, Follower>!
     
-    //-----------------------------------------------------------------------
     // MARK: - Injected properties
-    //-----------------------------------------------------------------------
     
     var username: String!
     
-    //-----------------------------------------------------------------------
     // MARK: - Inicialization
-    //-----------------------------------------------------------------------
     
     init(username: String) {
         super.init(nibName: nil, bundle: nil)
@@ -45,39 +56,12 @@ class FollowerListVC: GFDataLoadingVC {
         fatalError("init(coder:) has not been implemented")
     }
     
-    //-----------------------------------------------------------------------
-    // MARK: - Subviews
-    //-----------------------------------------------------------------------
-    
-    var collectionView: UICollectionView!
-    
-    //-----------------------------------------------------------------------
     // MARK: - View lifecycle
-    //-----------------------------------------------------------------------
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
-    }
-    
-    //-----------------------------------------------------------------------
-    // MARK: - Configuration
-    //-----------------------------------------------------------------------
-    
-    private func configure() {
-        configureViewController()
-        configureCollectionView()
-        getFollowers(username: username, page: page)
-        configureDataSource()
-        configureSearchController()
-    }
-    
-    private func configureViewController() {
+        
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
         
@@ -89,18 +73,19 @@ class FollowerListVC: GFDataLoadingVC {
         navigationItem.rightBarButtonItem = addButton
     }
     
-    private func configureCollectionView() {
-        collectionView = UICollectionView(
-            frame: view.bounds,
-            collectionViewLayout: UIHelper.create3CollumnFlowLayout(in: view)
-        )
-        collectionView.delegate = self
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    // MARK: - Configuration
+    
+    private func configure() {
         view.addSubview(collectionView)
-        collectionView.backgroundColor = .systemBackground
-        collectionView.register(
-            FollowerCell.self,
-            forCellWithReuseIdentifier: FollowerCell.reuseId
-        )
+        
+        getFollowers(username: username, page: page)
+        configureDataSource()
+        configureSearchController()
     }
     
     private func configureSearchController() {
@@ -111,52 +96,6 @@ class FollowerListVC: GFDataLoadingVC {
         searchController.searchBar.delegate = self
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-    }
-    
-    //-----------------------------------------------------------------------
-    // MARK: - Network call
-    //-----------------------------------------------------------------------
-    
-    func getFollowers(username:String, page: Int) {
-        showLoadingView()
-        NetworkManager.shared.getFollowers(
-            for: username,
-            page: page) { [weak self] result in
-                //weak self pq ele ta referenciando a propria tela
-                //e isso causa memory leak, por isso que precisa ser assim
-                //se não, quando o NetworkManager sair da memoria
-                //vai existir um reference ao ViewController ainda
-                guard let self = self else { return } //pra não precisar usar ? no self
-                
-                self.dismissLoadingView()
-                
-                switch result {
-                    
-                case .success(let followers):
-                    if followers.count < 100 {
-                        self.hasMoreFollowers = false
-                    }
-                    
-                    self.followers.append(contentsOf: followers)
-                    
-                    if self.followers.isEmpty {
-                        let message = "This user doesnt have any followes 🙄"
-                        DispatchQueue.main.async {
-                            self.showEmptyStateView(with: message, in: self.view)
-                        }
-                        return
-                    }
-                    
-                    self.updateData(on: self.followers)
-                    
-                case .failure(let error):
-                    self.presentGFAlertOnMainThread(
-                        title: "Bad stuff message",
-                        message: error.rawValue,
-                        bnuttonTitle: "ok"
-                    )
-                }
-            }
     }
     
     func configureDataSource() {
@@ -177,6 +116,59 @@ class FollowerListVC: GFDataLoadingVC {
         )
     }
     
+    // MARK: - Network call
+    
+    //TODO: aplicar algum padrão de arquitetura aqui
+    func getFollowers(username:String, page: Int) {
+        
+        showLoadingView()
+        
+        NetworkManager.shared.getFollowers(
+            for: username,
+            page: page
+        ) { [weak self] result in
+            //weak self pq ele ta referenciando a propria tela
+            //e isso causa memory leak, por isso que precisa ser assim
+            //se não, quando o NetworkManager sair da memoria
+            //vai existir um reference ao ViewController ainda
+            
+            guard let self = self else { return } //pra não precisar usar ? no self
+            
+            self.dismissLoadingView()
+            
+            switch result {
+                
+            case .success(let followers):
+                
+                if followers.count < 100 {
+                    self.hasMoreFollowers = false
+                }
+                
+                self.followers.append(contentsOf: followers)
+                
+                if self.followers.isEmpty {
+                    
+                    DispatchQueue.main.async {
+                        self.showEmptyStateView(
+                            with: "Esse usuário não tem seguidores 🙄",
+                            in: self.view
+                        )
+                    }
+                    return
+                }
+                
+                self.updateData(on: self.followers)
+                
+            case .failure(let error):
+                self.presentGFAlertOnMainThread(
+                    title: "Bad stuff message",
+                    message: error.rawValue,
+                    bnuttonTitle: "ok"
+                )
+            }
+        }
+    }
+    
     func updateData(on followers: [Follower]) {
         //isso serve para animar quando o datasource mudar
         //vale usar isso quando ter barra de busca na tela
@@ -189,9 +181,7 @@ class FollowerListVC: GFDataLoadingVC {
         }
     }
     
-    //-----------------------------------------------------------------------
-    // MARK: - Objc Methods
-    //-----------------------------------------------------------------------
+    // MARK: - Actions
     
     @objc func addButtonTapped() {
         showLoadingView()
@@ -226,9 +216,7 @@ class FollowerListVC: GFDataLoadingVC {
     
 }
 
-//-----------------------------------------------------------------------
 // MARK: - UICollectionViewDelegate
-//-----------------------------------------------------------------------
 
 extension FollowerListVC: UICollectionViewDelegate {
     
@@ -257,9 +245,7 @@ extension FollowerListVC: UICollectionViewDelegate {
     }
 }
 
-//-----------------------------------------------------------------------
-// MARK: - UISearchBarDelegate
-//-----------------------------------------------------------------------
+// MARK: - UISearchResultsUpdating, UISearchBarDelegate
 
 extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
     
@@ -283,9 +269,7 @@ extension FollowerListVC: UISearchResultsUpdating, UISearchBarDelegate {
 
 }
 
-//-----------------------------------------------------------------------
 // MARK: - UserInfoVCDelegate
-//-----------------------------------------------------------------------
 
 extension FollowerListVC: UserInfoVCDelegate {
     

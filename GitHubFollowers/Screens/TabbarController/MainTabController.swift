@@ -1,5 +1,5 @@
 //
-//  GFTabController.swift
+//  MainTabController.swift
 //  GitHubFollowers
 //
 //  Created by Guilherme Golfetto on 23/10/22.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GFTabController: UITabBarController {
+class MainTabController: UITabBarController {
 
     // MARK: - View lifecycle
     
@@ -39,7 +39,7 @@ class GFTabController: UITabBarController {
     }
     
     private func favoritesVC() -> UINavigationController {
-        let favoritesVC = FavoritesListVC()
+        let favoritesVC = FavoritesListViewController()
         favoritesVC.title = "Favoritos"
         favoritesVC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
         
