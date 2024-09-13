@@ -1,5 +1,5 @@
 //
-//  FavoritesListVC.swift
+//  FavoritesListViewController.swift
 //  GitHubFollowers
 //
 //  Created by Guilherme Golfetto on 25/06/22.
@@ -7,23 +7,17 @@
 
 import UIKit
 
-class FavoritesListVC: GFDataLoadingVC {
+class FavoritesListViewController: GFDataLoadingVC {
     
-    //-----------------------------------------------------------------------
     // MARK: - Private properties
-    //-----------------------------------------------------------------------
     
     var favorites: [Follower] = []
     
-    //-----------------------------------------------------------------------
     // MARK: - Subviews
-    //-----------------------------------------------------------------------
     
     let tableView = UITableView()
     
-    //-----------------------------------------------------------------------
     // MARK: - ViewController lifecycle
-    //-----------------------------------------------------------------------
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,9 +29,7 @@ class FavoritesListVC: GFDataLoadingVC {
         getFavorites()
     }
     
-    //-----------------------------------------------------------------------
     // MARK: - Configuration
-    //-----------------------------------------------------------------------
     
     private func configure() {
         view.backgroundColor = .systemBackground
@@ -54,7 +46,7 @@ class FavoritesListVC: GFDataLoadingVC {
         tableView.rowHeight = 80
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.removeExcessCell()
+        tableView.removeExcessCell() //nice
         
         tableView.register(FavoriteCell.self, forCellReuseIdentifier: FavoriteCell.reuseId)
     }
@@ -83,11 +75,9 @@ class FavoritesListVC: GFDataLoadingVC {
     }
 }
 
-//-----------------------------------------------------------------------
-// MARK: - Delegates
-//-----------------------------------------------------------------------
+// MARK: - UITableViewDelegate and UITableViewDataSource
 
-extension FavoritesListVC: UITableViewDelegate, UITableViewDataSource {
+extension FavoritesListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         favorites.count

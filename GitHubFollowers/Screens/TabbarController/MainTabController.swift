@@ -9,9 +9,7 @@ import UIKit
 
 class GFTabController: UITabBarController {
 
-    //-----------------------------------------------------------------------
     // MARK: - View lifecycle
-    //-----------------------------------------------------------------------
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,26 +23,24 @@ class GFTabController: UITabBarController {
         }
         
         viewControllers = [
-            createSearchNC(),
-            createFavoritesNC()
+            searchViewController(),
+            favoritesVC()
         ]
     }
     
-    //-----------------------------------------------------------------------
     // MARK: - Private methods
-    //-----------------------------------------------------------------------
 
-    private func createSearchNC() -> UINavigationController {
-        let searchVC = SearchVC()
-        searchVC.title = "Search"
-        searchVC.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
+    private func searchViewController() -> UINavigationController {
+        let searchViewController = SearchViewController()
+        searchViewController.title = "Buscar"
+        searchViewController.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
         
-        return UINavigationController(rootViewController: searchVC)
+        return UINavigationController(rootViewController: searchViewController)
     }
     
-    private func createFavoritesNC() -> UINavigationController {
+    private func favoritesVC() -> UINavigationController {
         let favoritesVC = FavoritesListVC()
-        favoritesVC.title = "Favorites"
+        favoritesVC.title = "Favoritos"
         favoritesVC.tabBarItem = UITabBarItem(tabBarSystemItem: .favorites, tag: 1)
         
         return UINavigationController(rootViewController: favoritesVC)
